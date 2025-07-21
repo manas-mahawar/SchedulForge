@@ -1,0 +1,31 @@
+# -------------------------
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pkl
+
+# Hide backend core processing bytecode, not source
+schedulforge_core/__pycache__/
+schedulforge_core/*.pyc
+schedulforge_core/*.pyo
+schedulforge_core/*.pyd
+
+# macOS system files
+.DS_Store
+
+# Windows system files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editor and IDE configs
+.vscode/
+.idea/
+*.swp
+
+# Node.js frontend dependencies
+node_modules/
+package-lock.json
+package.json

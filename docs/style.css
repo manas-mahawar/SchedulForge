@@ -1,0 +1,92 @@
+body {
+font-family: 'Poppins', sans-serif;
+margin: 20px;
+background: linear-gradient(135deg, #f2f4f7, #e0e7ff);
+color: #333;
+transition: background 0.3s, color 0.3s;
+}
+body.dark {
+background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+color: #eee;
+}
+h1 {
+text-align: center;
+margin-bottom: 20px;
+}
+form, #buttons {
+display: flex;
+justify-content: center;
+gap: 10px;
+flex-wrap: wrap;
+margin-bottom: 15px;
+}
+button {
+cursor: pointer;
+padding: 6px 12px;
+border-radius: 6px;
+border: none;
+color: white;
+font-weight: 500;
+transition: background 0.3s, transform 0.2s;
+}
+#uploadForm button[type="submit"] {
+background: #4CAF50; /* soft green */
+}
+#uploadForm button[type="submit"]:hover {
+background: #388E3C;
+}
+#uploadForm button[type="button"] {
+background: #9C27B0; /* muted purple */
+}
+#uploadForm button[type="button"]:hover {
+background: #7B1FA2;
+}
+#modeBtn {
+background: #607D8B; /* calm blue-grey */
+}
+#modeBtn:hover {
+background: #455A64;
+}
+#buttons button:nth-child(2) {
+background: #3F51B5; /* soft blue for PDF */
+}
+#buttons button:nth-child(2):hover {
+background: #303F9F;
+}
+#status {
+text-align: center;
+margin: 10px;
+font-size: 14px;
+}
+.spinner {
+border: 3px solid #ccc; border-top: 3px solid #4CAF50;
+border-radius: 50%; width: 16px; height: 16px;
+display: inline-block; animation: spin 1s linear infinite; margin-right:5px;
+}
+@keyframes spin { 100% { transform: rotate(360deg); } }
+table {
+border-collapse: collapse;
+width: 100%;
+margin-top: 20px;
+background: white;
+box-shadow: 0 0 10px rgba(0,0,0,0.1);
+border-radius: 8px; overflow: hidden;
+}
+body.dark table { background: #1e1e1e; }
+th, td {
+border: 1px solid #ddd; padding: 8px; text-align: center;
+font-size: 14px; transition: background 0.3s, color 0.3s;
+}
+td.lecture { background: #e8f5e9; }
+td.tutorial { background: #e3f2fd; }
+td.practical { background: #fff8e1; }
+body.dark td.lecture { background: #2e7d32; color: white; }
+body.dark td.tutorial { background: #1565c0; color: white; }
+body.dark td.practical { background: #ff8f00; color: black; }
+tr:hover { background: rgba(0,0,0,0.03); }
+small { display: block; text-align:center; margin: 4px 0; font-size:12px; }
+@media(max-width: 600px){
+table, form, #buttons { font-size: 12px; }
+th, td { padding: 6px; }
+form, #buttons { flex-direction: column; }
+}
