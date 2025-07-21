@@ -1,84 +1,170 @@
-from fastapi import FastAPI, UploadFile, Form
+from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import openpyxl
-import tempfile
-import os
 import re
+from openpyxl.utils import get_column_letter
 
 app = FastAPI()
 
-# Allow frontend to access backend
+# Enable CORS for frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Replace with actual frontend domain in production
-    allow_credentials=True,
+    allow_origins=["https://manas-mahawar.github.io"],  # secure it to your frontend
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=["*"]
 )
 
+# Regex to extract valid course codes
+course_pattern = re.compile(r"[A-Z]{3}\d{3}\s+[LPT]")
+
 @app.get("/")
-def read_root():
+def root():
     return {"message": "Timetable API running!"}
 
+@app.post("/list_sheets/")
+async def list_sheets(file: UploadFile = File(...)):
+    contents = await file.read()
+    temp_path = f"/tmp/{file.filename}"
+    with open(temp_path, "wb") as f:
+        f.write(contents)
+    wb = openpyxl.load_workbook(temp_path)
+    sheet_infos = [
+        {"index": idx + 1, "name": name.strip()}
+        for idx, name in enumerate(wb.sheetnames)
+        if name.strip().upper() != "PG TIME TABLE"
+    ]
+    return {"sheets": sheet_infos}
 
-@app.post("/uploadfile/")
-async def upload_file(
-    file: UploadFile,
-    sheet_choice: str = Form(...),
+@app.post("/list_tutorial_groups/")
+async def list_tutorial_groups(
+    file: UploadFile = File(...),
+    sheet_choice: int = Form(...)
+):
+    contents = await file.read()
+    temp_path = f"/tmp/{file.filename}"
+    with open(temp_path, "wb") as f:
+        f.write(contents)
+    wb = openpyxl.load_workbook(temp_path)
+
+    sheet_infos = [
+        (idx + 1, name.strip(), name)
+        for idx, name in enumerate(wb.sheetnames)
+        if name.strip().upper() != "PG TIME TABLE"
+    ]
+    selected = next((o_name for idx, s_name, o_name in sheet_infos if idx == sheet_choice), None)
+    if not selected:
+        return JSONResponse(content={"error": "Invalid sheet_choice"}, status_code=400)
+
+    sheet = wb[selected]
+    sheet_name_upper = sheet.title.strip().upper()
+
+    header_row = 5
+    if sheet_name_upper == "1ST YEAR A":
+        header_row = 4
+    elif sheet_name_upper == "1ST YEAR B":
+        header_row = 6
+
+    groups = []
+    for col in range(1, sheet.max_column + 1):
+        val = sheet.cell(row=header_row, column=col).value
+        if val and str(val).strip().upper() != "DAY":
+            groups.append(str(val).strip())
+    return {"tutorial_groups": groups}
+
+@app.post("/timetable/")
+async def get_timetable(
+    file: UploadFile = File(...),
+    sheet_choice: int = Form(...),
     tutorial_group: str = Form(...)
 ):
-    try:
-        # Save uploaded file temporarily
-        suffix = file.filename.split('.')[-1]
-        with tempfile.NamedTemporaryFile(delete=False, suffix=f".{suffix}") as tmp:
-            tmp.write(await file.read())
-            tmp_path = tmp.name
+    contents = await file.read()
+    temp_path = f"/tmp/{file.filename}"
+    with open(temp_path, "wb") as f:
+        f.write(contents)
+    wb = openpyxl.load_workbook(temp_path)
 
-        # Load workbook and sheet
-        wb = openpyxl.load_workbook(tmp_path, data_only=True)
-        if sheet_choice not in wb.sheetnames:
-            return JSONResponse(content={"error": "Sheet not found!"}, status_code=400)
-        ws = wb[sheet_choice]
+    sheet_infos = [
+        (idx + 1, name.strip(), name)
+        for idx, name in enumerate(wb.sheetnames)
+        if name.strip().upper() != "PG TIME TABLE"
+    ]
+    selected = next((o_name for idx, s_name, o_name in sheet_infos if idx == sheet_choice), None)
+    if not selected:
+        return JSONResponse(content={"error": "Invalid sheet_choice"}, status_code=400)
 
-        group = tutorial_group.strip().upper()
+    sheet = wb[selected]
+    sheet_name_upper = sheet.title.strip().upper()
 
-        timetable = {}
-        start_row = 8  # first row of actual data (time slots)
-        rows_per_day = 28
-        time_slots = ['08:50 AM', '09:40 AM', '10:30 AM', '11:20 AM', '12:10 PM',
-                      '01:00 PM', '01:50 PM', '02:40 PM', '03:30 PM', '04:20 PM', '05:10 PM', '06:00 PM', '06:50 PM', '07:40 PM']
-        days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+    if sheet_name_upper == "1ST YEAR A":
+        header_row, start_row = 4, 7
+    elif sheet_name_upper == "1ST YEAR B":
+        header_row, start_row = 6, 9
+    else:
+        header_row, start_row = 5, 8
 
-        for day_index, day in enumerate(days):
-            base_row = start_row + day_index * rows_per_day
-            timetable[day] = {'Course': [], 'Time': []}
+    group_column = None
+    for col in range(1, sheet.max_column + 1):
+        val = sheet.cell(row=header_row, column=col).value
+        if val and str(val).strip() == tutorial_group:
+            group_column = col
+            break
+    if not group_column:
+        return JSONResponse(content={"error": f"Tutorial group '{tutorial_group}' not found."}, status_code=404)
 
-            for i in range(0, rows_per_day, 2):
-                row = base_row + i
-                found = False
-                for col in range(3, ws.max_column + 1):  # Skip first two columns (day & time)
-                    cell_value = ws.cell(row=row, column=col).value
-                    if cell_value and group in str(cell_value).upper():
-                        cell_above = ws.cell(row=row - 1, column=col).value
-                        if not cell_above or group in str(cell_above).upper():
-                            content = str(cell_value).strip()
-                            # Extract course and room using regex (before faculty name)
-                            match = re.search(r'([A-Z]{2,}\d{3,}[A-Z]?(?:\s?[PL])?).*?([A-Z]+-\d+)', content)
-                            course = match.group(1) if match else content
-                            timetable[day]['Course'].append(course)
-                            slot_index = i // 2
-                            if slot_index < len(time_slots):
-                                timetable[day]['Time'].append(time_slots[slot_index])
-                            else:
-                                timetable[day]['Time'].append("Unknown")
-                            found = True
-                            break
-                if not found:
-                    continue
+    time_slots = [
+        "08:00 AM", "08:50 AM", "09:40 AM", "10:30 AM", "11:20 AM", "12:10 PM",
+        "01:00 PM", "01:50 PM", "02:40 PM", "03:30 PM", "04:20 PM", "05:10 PM",
+        "06:00 PM", "06:50 PM"
+    ]
+    day_list = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+    row_to_day_time = {}
+    for day_idx, day in enumerate(day_list):
+        for slot_idx, time in enumerate(time_slots):
+            row_idx = start_row + day_idx * 28 + slot_idx * 2
+            row_to_day_time[row_idx] = (day, time)
 
-        os.remove(tmp_path)
-        return timetable
+    dict_timetable = {day: {} for day in day_list}
+    processed_merged = set()
 
-    except Exception as e:
-        return JSONResponse(content={"error": str(e)}, status_code=500)
+    for row in range(start_row, start_row + 28 * len(day_list)):
+        cell = sheet.cell(row=row, column=group_column)
+        coord = f"{get_column_letter(group_column)}{row}"
+        subject_row = row
+
+        for merged in sheet.merged_cells.ranges:
+            if coord in merged:
+                top_left = (merged.min_row, merged.min_col)
+                if top_left not in processed_merged:
+                    subject = sheet.cell(*top_left).value
+                    subject_row = merged.min_row
+                    processed_merged.add(top_left)
+                    break
+                else:
+                    subject = None
+                    break
+        else:
+            subject = cell.value
+
+        if not subject:
+            continue
+
+        subject_str = str(subject).strip().upper()
+        if subject_str == tutorial_group.upper() or subject_str == "DAY":
+            continue
+
+        match = course_pattern.search(subject_str)
+        if not match:
+            continue
+
+        course_code = match.group(0)
+        if subject_row in row_to_day_time:
+            day, time_str = row_to_day_time[subject_row]
+            dict_timetable[day][time_str] = course_code
+
+    return {
+        "sheet_name": sheet.title,
+        "tutorial_group": tutorial_group,
+        "time_slots": time_slots,
+        "timetable": dict_timetable
+    }
