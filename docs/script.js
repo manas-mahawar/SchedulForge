@@ -1,4 +1,4 @@
-const API_BASE = "https://schedulforge.onrender.com"; // Updated to deployed backend
+const API_BASE = "https://schedulforge-backend-euv7.onrender.com";
 
 const fileInput = document.getElementById("file");
 const sheetSelect = document.getElementById("sheet_choice");
