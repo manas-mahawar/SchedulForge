@@ -1,24 +1,56 @@
-📦 SchedulForge Backend (Core)
+SchedulForge Backend
+====================
 
-This folder contains the backend logic for the SchedulForge web application.
+Project: SchedulForge — A Full-Stack Intelligent Scheduling Data Parsing and Structuring System
 
-⚙️ Backend Overview:
-- Built using **FastAPI** (Python)
-- Parses complex Excel timetables with merged cells, filters by tutorial group
-- Generates a structured, clean timetable dictionary
-- Integrates with frontend via REST API
+This backend service is built using FastAPI to process complex Excel timetable data and provide clean, structured JSON for frontend visualization.
 
-🔒 Important Note:
-The main backend script (`main.py`) is **not included** in this public repository to protect proprietary logic and prevent code copying.
+Author: Manas Mahawar
+Institution: Thapar Institute of Engineering and Technology, Patiala
+Internship: DEAL, DRDO, Dehradun
 
-🧠 Original Logic:
-The backend includes a custom-built algorithm to:
-- Handle messy and non-uniform Excel structures
-- Extract subjects, timings, and room numbers with precision
-- Filter results based on tutorial group inputs
+----------------------------------------------------------------------
+Technologies & Libraries
+- Python
+- FastAPI
+- Uvicorn
+- openpyxl
+- pandas
+- python-multipart
+- pydantic
 
-🚀 Access or Demo:
-A working demo or backend API preview is available upon request.  
-Feel free to reach out if you'd like to learn more about the implementation!
+----------------------------------------------------------------------
+Key Endpoints (documented at /docs)
+- /list_sheets/  
+  Lists sheet names in the uploaded Excel file.
 
-© 2025 Manas Mahawar – All rights reserved.
+- /list_tutorial_groups/  
+  Detects and lists tutorial groups based on the uploaded Excel sheet.
+
+- /timetable/  
+  Parses and returns structured timetable data as JSON.
+
+----------------------------------------------------------------------
+How it works
+- Accepts Excel files uploaded by the user.
+- Uses openpyxl and custom pattern-matching algorithms to:
+  • Traverse large datasets
+  • Handle merged cells
+  • Detect tutorial groups in dynamic rows
+  • Generate structured JSON
+- Returns data to the frontend for rendering and PDF export.
+
+----------------------------------------------------------------------
+Deployment
+- Hosted on Render cloud platform.
+- Live API: https://schedulforge-backend-euv7.onrender.com
+- Interactive API docs: https://schedulforge-backend-euv7.onrender.com/docs#/
+
+----------------------------------------------------------------------
+Related Links
+Frontend (GitHub Pages): https://manas-mahawar.github.io/SchedulForge/
+GitHub Repository: https://github.com/manas-mahawar/SchedulForge
+
+----------------------------------------------------------------------
+
+For details on the full project workflow, see the main README.md in the root folder.

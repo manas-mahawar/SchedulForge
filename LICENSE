@@ -1,12 +1,21 @@
+# License
+
 Copyright (c) 2025 Manas Mahawar
 
-All Rights Reserved.
+This project, SchedulForge, was developed as part of a summer internship at  
+Defence Electronics Applications Laboratory (DEAL), DRDO, Dehradun.
 
-This software is proprietary and confidential. Unauthorized copying, modification, use, or distribution of any portion of this code or its associated materials is strictly prohibited.
+Permission is hereby granted, free of charge, to any person obtaining a copy  
+of this software and associated documentation files (the "Software"), to use, copy,  
+and modify the Software for academic, research, and personal non-commercial purposes,  
+subject to the following conditions:
 
-No part of this software may be reproduced, stored in a retrieval system, or transmitted in any form or by any means—electronic, mechanical, photocopying, recording, or otherwise—without the prior written permission of the author.
+- The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+- The Software shall not be used for commercial purposes without prior written permission.
+- Any publication or work using this software must acknowledge the author and the internship context at DEAL, DRDO.
 
-Access to this software does not grant any license or right to use it for any purpose other than direct viewing by authorized individuals.
-
-Violators will be subject to civil and criminal penalties under applicable laws.
-
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,  
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,  
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE  
+OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
