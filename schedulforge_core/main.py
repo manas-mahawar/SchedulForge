@@ -71,13 +71,14 @@ async def list_tutorial_groups(
     sheet = wb[selected]
     sheet_name_upper = sheet.title.strip().upper()
 
-    # Determine header row
-    if sheet_name_upper == "1ST YEAR A":
-        header_row = 4
+    if sheet_name_upper == "4TH YEAR A":
+        header_row, start_row = 5, 7
     elif sheet_name_upper == "1ST YEAR B":
-        header_row = 6
+        header_row, start_row = 6, 9
+    elif sheet_name_upper == "4TH YEAR B":
+        header_row, start_row = 6, 8
     else:
-        header_row = 5
+        header_row, start_row = 5, 8
 
     # Extract tutorial groups
     groups = []
@@ -111,10 +112,12 @@ async def get_timetable(
     sheet_name_upper = sheet.title.strip().upper()
 
     # Determine header & start rows
-    if sheet_name_upper == "1ST YEAR A":
-        header_row, start_row = 4, 7
+    if sheet_name_upper == "4TH YEAR A":
+        header_row, start_row = 5, 7
     elif sheet_name_upper == "1ST YEAR B":
         header_row, start_row = 6, 9
+    elif sheet_name_upper == "4TH YEAR B":
+        header_row, start_row = 6, 8
     else:
         header_row, start_row = 5, 8
 
