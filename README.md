@@ -31,6 +31,34 @@ SchedulForge is a full-stack system that parses complex Excel files and generate
 
 ---
 
+## Demo
+
+### User Interface
+
+![Frontend](./assets/frontend.png)
+
+### Real-Time Status
+
+![Status](./assets/status.png)
+
+### Dark Mode
+
+![Dark Mode](./assets/darkmode.png)
+
+### API Testing (Swagger)
+
+![API](./assets/api.png)
+
+### JSON Output
+
+![JSON](./assets/json.png)
+
+### Deployment Status
+
+![Deployment](./assets/deployment1.png)
+
+---
+
 ## System Architecture
 
 ### Backend
